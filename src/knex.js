@@ -8,6 +8,13 @@ import { SUPPORTED_CLIENTS } from './constants';
 import { resolveClientNameWithAliases } from './helpers';
 
 export default function Knex(config) {
+  // wrapGlobalTransaction: all queries are wrapped in a transaction specified somewhere else. Useful for running BEGIN, ROLLBACK around test cases.
+  if (config.wrapGlobalTransaction) {
+    if (!config.pool) config.pool = {};
+    config.pool.max = 1;
+    config.pool.min = 1;
+  }
+
   // If config is a string, try to parse it
   if (typeof config === 'string') {
     const parsedConfig = Object.assign(parseConnection(config), arguments[2]);
